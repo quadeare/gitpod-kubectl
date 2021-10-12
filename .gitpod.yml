@@ -1,3 +1,5 @@
+image: 
+
 vscode:
   extensions:
     - ms-azuretools.vscode-docker

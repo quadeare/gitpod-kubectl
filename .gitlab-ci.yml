@@ -3,7 +3,7 @@ image: docker:latest
 stages:
   - build
 
-build:
+.build:
   stage: build
   image: docker:dind
   services:
@@ -11,9 +11,27 @@ build:
   before_script:
     - docker login -u $CI_REGISTRY_USER -p "$CI_REGISTRY_PASSWORD"
     - apk add curl
+  rules:
+    - changes:
+        - Dockerfile
+    - if: $CI_PIPELINE_SOURCE == "schedule"
+
+build-base:
+  extends: .build
   script:
     - KUBECTL_VERSION=$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)
     - docker build --build-arg KUBECTL_VERSION=$KUBECTL_VERSION -t quadeare/$CI_PROJECT_NAME:$KUBECTL_VERSION .
     - docker push quadeare/$CI_PROJECT_NAME:$KUBECTL_VERSION
     - docker tag quadeare/$CI_PROJECT_NAME:$KUBECTL_VERSION quadeare/$CI_PROJECT_NAME:latest
     - docker push quadeare/$CI_PROJECT_NAME:latest
+    - docker tag quadeare/$CI_PROJECT_NAME:$KUBECTL_VERSION quadeare/$CI_PROJECT_NAME:base
+    - docker push quadeare/$CI_PROJECT_NAME:base
+
+build-full:
+  extends: .build
+  script:
+    - KUBECTL_VERSION=$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)
+    - docker build --build-arg KUBECTL_VERSION=$KUBECTL_VERSION --build-arg GITPOD_IMAGE=gitpod/workspace-full:latest -t quadeare/$CI_PROJECT_NAME:$KUBECTL_VERSION-full .
+    - docker push quadeare/$CI_PROJECT_NAME:$KUBECTL_VERSION-full
+    - docker tag quadeare/$CI_PROJECT_NAME:$KUBECTL_VERSION-full quadeare/$CI_PROJECT_NAME:full
+    - docker push quadeare/$CI_PROJECT_NAME:full
