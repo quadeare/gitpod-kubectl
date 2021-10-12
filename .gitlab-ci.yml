@@ -1,0 +1,19 @@
+image: docker:latest
+
+stages:
+  - build
+
+build:
+  stage: build
+  image: docker:dind
+  services:
+    - docker:dind
+  before_script:
+    - docker login -u $CI_REGISTRY_USER -p "$CI_REGISTRY_PASSWORD"
+    - apk add curl
+  script:
+    - KUBECTL_VERSION=$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)
+    - docker build --build-arg KUBECTL_VERSION=$KUBECTL_VERSION -t quadeare/$CI_PROJECT_NAME:$KUBECTL_VERSION .
+    - docker push quadeare/$CI_PROJECT_NAME:$KUBECTL_VERSION
+    - docker tag quadeare/$CI_PROJECT_NAME:$KUBECTL_VERSION quadeare/$CI_PROJECT_NAME:latest
+    - docker push quadeare/$CI_PROJECT_NAME:latest
