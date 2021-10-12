@@ -1,4 +1,5 @@
-FROM gitpod/workspace-base:latest
+ARG GITPOD_IMAGE=gitpod/workspace-base:latest
+FROM ${GITPOD_IMAGE}
 
 ARG KUBECTL_VERSION
 
