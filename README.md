@@ -22,6 +22,7 @@ image: quadeare/gitpod-kubectl:latest
 | Image                                 | From                         |
 |---------------------------------------|------------------------------|
 | quadeare/gitpod-kubectl:latest        | gitpod/workspace-base:latest |
+| quadeare/gitpod-kubectl:base          | gitpod/workspace-base:latest |
 | quadeare/gitpod-kubectl:v1.xx.xx      | gitpod/workspace-base:latest |
 | quadeare/gitpod-kubectl:full          | gitpod/workspace-full:latest |
 | quadeare/gitpod-kubectl:v1.xx.xx-full | gitpod/workspace-full:latest |
